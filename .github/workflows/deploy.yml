@@ -1,0 +1,23 @@
+name: Deploy to o2switch
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build Docusaurus
+        run: npm run build
+      - name: Deploy to o2switch
+        uses: appleboy/ssh-action@master
+        with:
+          host: doc.debunkcafe.fr
+          username: sc1gadi6705
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            mkdir -p ~/doc.debunkcafe.fr/public
+            rsync -avz --delete build/ ~/doc.debunkcafe.fr/public
